@@ -1,11 +1,11 @@
 package main
 
 import (
-	mux "WebSocket/internal/http"
 	"context"
 	"errors"
 	"flag"
 	"fmt"
+	mux "github.com/gabrielmoura/davServer/internal/http"
 	"log"
 	"net/http"
 	"os"
@@ -23,7 +23,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    *port,
-		Handler: mux.InitServer(),
+		Handler: mux.InitMux(),
 	}
 	// Channel to listen for termination signals
 	stop := make(chan os.Signal, 1)

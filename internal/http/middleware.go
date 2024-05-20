@@ -1,9 +1,9 @@
 package http
 
 import (
-	"WebSocket/internal/data"
 	"context"
 	"encoding/base64"
+	"github.com/gabrielmoura/davServer/internal/data"
 	"net/http"
 	"strings"
 )

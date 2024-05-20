@@ -1,8 +1,8 @@
 package http
 
 import (
-	"WebSocket/internal/data"
 	"fmt"
+	"github.com/gabrielmoura/davServer/internal/data"
 	"golang.org/x/net/webdav"
 	"log"
 	"net/http"
@@ -51,6 +51,16 @@ func handleUserAdmin(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		result := data.ResponseMap{"users": data.GetValidUsers()}
 		w.Write([]byte(fmt.Sprintf("%v", result)))
+
+	case http.MethodDelete:
+		username := r.FormValue("username")
+		if username == "" {
+			http.Error(w, "Usuário é obrigatório", http.StatusBadRequest)
+			return
+		}
+		data.DeleteUser(username)
+		w.WriteHeader(http.StatusNoContent)
+		w.Write([]byte(fmt.Sprintf("Usuário %s removido com sucesso", username)))
 
 	default:
 		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
