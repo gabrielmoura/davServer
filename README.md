@@ -1,4 +1,5 @@
 # WebDav Server
+## Em Desenvolvimento
 
 Um servidor WebDAV simples com autenticação básica e API para gerenciamento de usuários e diretórios.
 
@@ -41,6 +42,7 @@ Authorization: Bearer meu_token_secreto
 #### Observações
 - /user/file e /user/pub O token esperado é um base64 da string `username:password` e o token deve ser passado no header da requisição com o nome "Authorization".
 - /admin/users O token esperado é um token simples e o token deve ser passado no header da requisição com o nome "Authorization" definido no momento da execução do servidor.
+- O caminho do DB é por padrão `/tmp/badgerDB`, altere o caminho para não perder os dados ao reiniciar o servidor.
 
 ### Exemplo de Requisição (cURL)
 
