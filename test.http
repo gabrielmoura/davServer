@@ -1,0 +1,10 @@
+### GET All Users
+GET http://localhost:8080/admin/user
+Authorization: Bearer 123456
+
+### Create User
+POST http://localhost:8080/admin/user
+Authorization: Bearer 123456
+Content-Type: application/x-www-form-urlencoded
+
+username=user1&password=senha1

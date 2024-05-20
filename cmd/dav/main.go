@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"errors"
-	"flag"
 	"fmt"
+	"github.com/gabrielmoura/davServer/config"
+	"github.com/gabrielmoura/davServer/internal/data"
 	mux "github.com/gabrielmoura/davServer/internal/http"
 	"log"
 	"net/http"
@@ -14,15 +15,15 @@ import (
 	"time"
 )
 
-var (
-	port = flag.String("port", ":8080", "Server Port")
-)
-
 func main() {
-	flag.Parse()
+	log.Println("Carregar configurações")
+	config.LoadConfig()
+
+	log.Println("Iniciar banco de dados")
+	data.InitDB()
 
 	server := &http.Server{
-		Addr:    *port,
+		Addr:    fmt.Sprintf(":%d", config.Conf.Port),
 		Handler: mux.InitMux(),
 	}
 	// Channel to listen for termination signals

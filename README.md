@@ -34,8 +34,13 @@ Authorization: Bearer meu_token_secreto
 
 - `POST /admin/users`: Cria um novo usuário.
 - `GET /admin/users`: Lista todos os usuários.
-- `DELETE /users`: Deleta um usuário.
+- `DELETE /users`: Deleta um usuário
 
+ Mais informações podem ser obtidas em [test.http](test.http).
+
+#### Observações
+- /user/file e /user/pub O token esperado é um base64 da string `username:password` e o token deve ser passado no header da requisição com o nome "Authorization".
+- /admin/users O token esperado é um token simples e o token deve ser passado no header da requisição com o nome "Authorization" definido no momento da execução do servidor.
 
 ### Exemplo de Requisição (cURL)
 
