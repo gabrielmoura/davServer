@@ -5,6 +5,7 @@ import (
 	"flag"
 	"github.com/spf13/viper"
 	"log"
+	"regexp"
 )
 
 type Cfg struct {
@@ -23,6 +24,7 @@ type I2PCfg struct {
 	Host            string `mapstructure:"HOST"`
 	Url             string `mapstructure:"URL"`
 	HttpsUrl        string `mapstructure:"HTTPS_URL"`
+	SAMAddr         string `mapstructure:"SAM_ADDR"`
 }
 
 var (
@@ -46,10 +48,11 @@ func loadByFlag() error {
 		DBDir:        "/tmp/badgerDB",
 		I2PCfg: &I2PCfg{
 			Enabled:         *enabledI2P,
-			HttpHostAndPort: "",
+			HttpHostAndPort: "127.0.0.1:7672",
 			Host:            "",
-			Url:             "",
+			Url:             "127.0.0.1:7672",
 			HttpsUrl:        "",
+			SAMAddr:         "127.0.0.1:7656",
 		},
 	}
 	// Atualiza a variável global Conf
@@ -69,6 +72,8 @@ func loadByConfigFile() error {
 	vip.SetDefault("TIME_FORMAT", "02-Jan-2006")
 	vip.SetDefault("TIME_ZONE", "America/Sao_Paulo")
 	vip.SetDefault("I2P_CFG.ENABLED", false)
+	vip.SetDefault("I2P_CFG.SAM_ADDR", "127.0.0.1:7656")
+	vip.SetDefault("I2P_CFG.HTTP_HOST_AND_PORT", "127.0.0.1:7672")
 
 	// Lendo o arquivo de configuração conf.yml
 	vip.SetConfigName("conf")
@@ -83,6 +88,13 @@ func loadByConfigFile() error {
 		var configFileNotFoundError viper.ConfigFileNotFoundError
 		if !errors.As(err, &configFileNotFoundError) {
 			return err
+		}
+	}
+	// Se APP_NAME não estiver definido no padrão, retorne um erro
+	if vip.IsSet("APP_NAME") {
+		regex := regexp.MustCompile("^[A-Za-z0-9]+$")
+		if !regex.MatchString(vip.GetString("APP_NAME")) {
+			return errors.New("APP_NAME só pode conter letras e números")
 		}
 	}
 

@@ -15,7 +15,10 @@ import (
 )
 
 func save(c *config.Cfg) error {
-	log.Printf("Save I2P Config: %v", c.I2PCfg)
+	fmt.Println("Save I2P Config:")
+	fmt.Printf("HTTP_HOST_AND_PORT: %s\n", c.I2PCfg.HttpHostAndPort)
+	fmt.Printf("HOST: %s\n", c.I2PCfg.Host)
+	fmt.Printf("URL: %s\n", c.I2PCfg.Url)
 	err := data.SaveI2pConfig(c.I2PCfg)
 	if err != nil {
 		return err
@@ -31,7 +34,7 @@ func InitI2P() (net.Listener, error) {
 		}
 		time.Sleep(time.Second * 3)
 
-		for !checksam.CheckSAMAvailable("127.0.0.1:7656") {
+		for !checksam.CheckSAMAvailable(config.Conf.I2PCfg.SAMAddr) {
 			log.Println("Checking SAM")
 			time.Sleep(time.Second * 15)
 			log.Println("Waiting for SAM")
@@ -84,8 +87,6 @@ func portCheck(addr string) (status bool, faddr string, err error) {
 	return
 }
 func waitPass(afterName string) (bool, net.Listener, error) {
-
-	fmt.Println("User exists, ready to go.")
 	listener, err := sam.I2PListener(config.Conf.AppName+afterName, "127.0.0.1:7656", config.Conf.AppName+afterName)
 	if err != nil {
 		panic(err)
@@ -94,11 +95,9 @@ func waitPass(afterName string) (bool, net.Listener, error) {
 	config.Conf.I2PCfg.Host = strings.Split(listener.Addr().(i2pkeys.I2PAddr).Base32(), ":")[0]
 	if !strings.HasSuffix(config.Conf.I2PCfg.HttpsUrl, "i2p") {
 		config.Conf.I2PCfg.HttpsUrl = "https://" + listener.Addr().(i2pkeys.I2PAddr).Base32()
-		//log.Println(domainhelp)
 	}
 	if !strings.HasSuffix(config.Conf.I2PCfg.Url, "i2p") {
 		config.Conf.I2PCfg.Url = "https://" + listener.Addr().(i2pkeys.I2PAddr).Base32()
-		//log.Println(domainhelp)
 	}
 	config.Conf.I2PCfg.Url = "http://" + listener.Addr().(i2pkeys.I2PAddr).Base32()
 	if err := save(config.Conf); err != nil {

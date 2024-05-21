@@ -20,8 +20,8 @@ Um servidor WebDAV simples com autenticação básica e API para gerenciamento d
 **Opções:**
 
 - `-port`: Porta em que o servidor irá escutar (padrão: 8080).
-- `-root`: Diretório raiz onde os arquivos serão armazenados (padrão: diretório atual).
-- `-token`: Token de autenticação para a API (opcional).
+- `-root`: Diretório raiz onde os arquivos serão armazenados (padrão: ./root).
+- `-token`: Token de autenticação para a API (padrão: 123456).
 - `-i2p`: Habilita o uso do I2P.
 - `-config`: Habilita o uso de um arquivo de configuração.
 - `-h`: Exibe a ajuda com as opções disponíveis.
@@ -51,6 +51,7 @@ Mais informações podem ser obtidas em [test.http](test.http).
   Authorization" definido no momento da execução do servidor.
 - O caminho do DB é por padrão `/tmp/badgerDB`, altere o caminho para não perder os dados ao reiniciar o servidor.
 - Para Usar com I2P é necessário que o SAM esteja ativo e configurado para o servidor.
+- Nenhum usuário é criado por padrão, é necessário criar um usuário para poder acessar o servidor.
 
 ### Exemplo de Requisição (cURL)
 

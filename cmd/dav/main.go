@@ -45,7 +45,7 @@ func main() {
 			if err != nil {
 				log.Fatalf("Erro ao iniciar o servidor I2P: %v\n", err)
 			}
-			fmt.Printf("Servidor I2P iniciado em i2p://%s\n", ls.Addr())
+			fmt.Printf("Servidor I2P iniciado em http://%s\n", ls.Addr())
 			if err := server.Serve(ls); err != nil {
 				log.Fatalf("Erro ao iniciar o servidor: %v\n", err)
 			}
