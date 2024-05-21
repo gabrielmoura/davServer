@@ -1,4 +1,5 @@
 # WebDav Server
+
 ## Em Desenvolvimento
 
 Um servidor WebDAV simples com autenticação básica e API para gerenciamento de usuários e diretórios.
@@ -13,7 +14,7 @@ Um servidor WebDAV simples com autenticação básica e API para gerenciamento d
 ### Uso
 
 ```bash
-./webdav-server -port 8080 -root /var/www/webdav -token meu_token_secreto
+./dav -root=/var/www/webdav -token=meu_token_secreto
 ```
 
 **Opções:**
@@ -21,11 +22,14 @@ Um servidor WebDAV simples com autenticação básica e API para gerenciamento d
 - `-port`: Porta em que o servidor irá escutar (padrão: 8080).
 - `-root`: Diretório raiz onde os arquivos serão armazenados (padrão: diretório atual).
 - `-token`: Token de autenticação para a API (opcional).
+- `-i2p`: Habilita o uso do I2P.
+- `-config`: Habilita o uso de um arquivo de configuração.
 - `-h`: Exibe a ajuda com as opções disponíveis.
 
 ### API
 
-A API RESTful permite gerenciar usuários e diretórios. Para utilizar a API, inclua o token de autenticação no cabeçalho `Authorization` das requisições:
+A API Rest permite gerenciar usuários e diretórios. Para utilizar a API, inclua o token de autenticação no
+cabeçalho `Authorization` das requisições:
 
 ```
 Authorization: Bearer meu_token_secreto
@@ -37,12 +41,16 @@ Authorization: Bearer meu_token_secreto
 - `GET /admin/users`: Lista todos os usuários.
 - `DELETE /users`: Deleta um usuário
 
- Mais informações podem ser obtidas em [test.http](test.http).
+Mais informações podem ser obtidas em [test.http](test.http).
 
 #### Observações
-- /user/file e /user/pub O token esperado é um base64 da string `username:password` e o token deve ser passado no header da requisição com o nome "Authorization".
-- /admin/users O token esperado é um token simples e o token deve ser passado no header da requisição com o nome "Authorization" definido no momento da execução do servidor.
+
+- /user/file e /user/pub O token esperado é um base64 da string `username:password` e o token deve ser passado no header
+  da requisição com o nome "Authorization".
+- /admin/users O token esperado é um token simples e o token deve ser passado no header da requisição com o nome "
+  Authorization" definido no momento da execução do servidor.
 - O caminho do DB é por padrão `/tmp/badgerDB`, altere o caminho para não perder os dados ao reiniciar o servidor.
+- Para Usar com I2P é necessário que o SAM esteja ativo e configurado para o servidor.
 
 ### Exemplo de Requisição (cURL)
 

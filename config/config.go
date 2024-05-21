@@ -4,20 +4,30 @@ import (
 	"errors"
 	"flag"
 	"github.com/spf13/viper"
+	"log"
 )
 
 type Cfg struct {
-	AppName      string `mapstructure:"APP_NAME"`
-	DBDir        string `mapstructure:"DB_DIR"`
-	Port         int    `mapstructure:"PORT"`
-	ShareRootDir string `mapstructure:"SHARE_ROOT_DIR"`
-	TimeFormat   string `mapstructure:"TIME_FORMAT"`
-	TimeZone     string `mapstructure:"TIME_ZONE"`
-	GlobalToken  string `mapstructure:"GLOBAL_TOKEN"`
+	AppName      string  `mapstructure:"APP_NAME"`
+	DBDir        string  `mapstructure:"DB_DIR"`
+	Port         int     `mapstructure:"PORT"`
+	ShareRootDir string  `mapstructure:"SHARE_ROOT_DIR"`
+	TimeFormat   string  `mapstructure:"TIME_FORMAT"`
+	TimeZone     string  `mapstructure:"TIME_ZONE"`
+	GlobalToken  string  `mapstructure:"GLOBAL_TOKEN"`
+	I2PCfg       *I2PCfg `mapstructure:"I2P_CFG"`
+}
+type I2PCfg struct {
+	Enabled         bool   `mapstructure:"ENABLED"`
+	HttpHostAndPort string `mapstructure:"HTTP_HOST_AND_PORT"`
+	Host            string `mapstructure:"HOST"`
+	Url             string `mapstructure:"URL"`
+	HttpsUrl        string `mapstructure:"HTTPS_URL"`
 }
 
 var (
 	enabledConfig = flag.Bool("config", false, "Enable config file")
+	enabledI2P    = flag.Bool("i2p", false, "Enable I2P")
 	rootDirectory = flag.String("root", "./root", "Diretório raiz do servidor WebDAV")
 	globalToken   = flag.String("token", "123456", "Token de autenticação")
 	port          = flag.Int("port", 8080, "Server Port")
@@ -34,6 +44,13 @@ func loadByFlag() error {
 		TimeFormat:   "02-Jan-2006",
 		TimeZone:     "America/Sao_Paulo",
 		DBDir:        "/tmp/badgerDB",
+		I2PCfg: &I2PCfg{
+			Enabled:         *enabledI2P,
+			HttpHostAndPort: "",
+			Host:            "",
+			Url:             "",
+			HttpsUrl:        "",
+		},
 	}
 	// Atualiza a variável global Conf
 	Conf = cfg
@@ -51,6 +68,7 @@ func loadByConfigFile() error {
 	vip.SetDefault("APP_NAME", "DavServer")
 	vip.SetDefault("TIME_FORMAT", "02-Jan-2006")
 	vip.SetDefault("TIME_ZONE", "America/Sao_Paulo")
+	vip.SetDefault("I2P_CFG.ENABLED", false)
 
 	// Lendo o arquivo de configuração conf.yml
 	vip.SetConfigName("conf")
@@ -68,11 +86,6 @@ func loadByConfigFile() error {
 		}
 	}
 
-	//// Se JWT_SECRET não estiver definido, retorne um erro
-	//if !vip.IsSet("JWT_SECRET") {
-	//	return errors.New("JWT_SECRET is not set")
-	//}
-
 	// Atribua as configurações ao cfg
 	if err := vip.Unmarshal(&cfg); err != nil {
 		return err
@@ -86,8 +99,10 @@ func loadByConfigFile() error {
 func LoadConfig() error {
 	flag.Parse()
 	if *enabledConfig {
-		return loadByFlag()
-	} else {
+		log.Printf("Carregando configurações do arquivo")
 		return loadByConfigFile()
+	} else {
+		log.Printf("Carregando configurações por flag")
+		return loadByFlag()
 	}
 }

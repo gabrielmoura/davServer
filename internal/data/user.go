@@ -3,7 +3,9 @@ package data
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"github.com/dgraph-io/badger/v4"
 	"log"
 	"os"
 )
@@ -73,4 +75,36 @@ func CreateUserDirectory(path string) (string, error) {
 		return "", err
 	}
 	return path, nil
+}
+
+func writeUsers(db *badger.DB, user []User) error {
+	return db.Update(func(txn *badger.Txn) error {
+		data, err := serializeUser(user)
+		if err != nil {
+			return err
+		}
+		return txn.Set([]byte("users"), data)
+	})
+}
+func readUsers(db *badger.DB) ([]User, error) {
+	var user []User
+	err := db.View(func(txn *badger.Txn) error {
+		item, err := txn.Get([]byte("users"))
+		if err != nil {
+			return err
+		}
+		return item.Value(func(val []byte) error {
+			user, err = deserializeUser(val)
+			return err
+		})
+	})
+	return user, err
+}
+func serializeUser(user []User) ([]byte, error) {
+	return json.Marshal(user)
+}
+func deserializeUser(data []byte) ([]User, error) {
+	var user []User
+	err := json.Unmarshal(data, &user)
+	return user, err
 }

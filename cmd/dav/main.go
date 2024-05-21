@@ -7,6 +7,7 @@ import (
 	"github.com/gabrielmoura/davServer/config"
 	"github.com/gabrielmoura/davServer/internal/data"
 	mux "github.com/gabrielmoura/davServer/internal/http"
+	"github.com/gabrielmoura/davServer/internal/i2p"
 	"log"
 	"net/http"
 	"os"
@@ -17,10 +18,16 @@ import (
 
 func main() {
 	log.Println("Carregar configurações")
-	config.LoadConfig()
+	err := config.LoadConfig()
+	if err != nil {
+		return
+	}
 
 	log.Println("Iniciar banco de dados")
-	data.InitDB()
+	err = data.InitDB()
+	if err != nil {
+		return
+	}
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", config.Conf.Port),
@@ -32,10 +39,23 @@ func main() {
 
 	// Start server in a goroutine
 	go func() {
-		fmt.Println("Servidor WebDAV iniciado em dav://localhost:8080/dav/")
-		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalf("Erro ao iniciar o servidor: %v\n", err)
+		log.Println("Iniciando o servidor...")
+		if config.Conf.I2PCfg.Enabled {
+			ls, err := i2p.InitI2P()
+			if err != nil {
+				log.Fatalf("Erro ao iniciar o servidor I2P: %v\n", err)
+			}
+			fmt.Printf("Servidor I2P iniciado em i2p://%s\n", ls.Addr())
+			if err := server.Serve(ls); err != nil {
+				log.Fatalf("Erro ao iniciar o servidor: %v\n", err)
+			}
+		} else {
+			fmt.Println("Servidor WebDAV iniciado em dav://localhost:8080/dav/")
+			if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+				log.Fatalf("Erro ao iniciar o servidor: %v\n", err)
+			}
 		}
+
 	}()
 
 	// Block until a signal is received

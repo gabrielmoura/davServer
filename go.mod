@@ -4,6 +4,9 @@ go 1.22
 
 require (
 	github.com/dgraph-io/badger/v4 v4.2.0
+	github.com/eyedeekay/checki2cp v0.0.21
+	github.com/eyedeekay/i2pkeys v0.33.7
+	github.com/eyedeekay/sam3 v0.33.7
 	github.com/google/uuid v1.4.0
 	github.com/spf13/viper v1.18.2
 	golang.org/x/net v0.25.0
