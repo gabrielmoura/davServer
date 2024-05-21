@@ -4,7 +4,12 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/emersion/go-webdav/caldav"
+	"github.com/emersion/go-webdav/carddav"
+	iCal "github.com/gabrielmoura/davServer/internal/caldav"
+	ICard "github.com/gabrielmoura/davServer/internal/carddav"
 	"io"
+	"log"
 	"net/http"
 	"os"
 )
@@ -12,11 +17,40 @@ import (
 func InitMux() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.Handle("/dav/", BasicAuthMiddleware(http.HandlerFunc(handleWebDAV)))
+	mux.Handle("/caldav/", BasicAuthMiddleware(http.HandlerFunc(handleCalDav)))
+	mux.Handle("/carddav/", BasicAuthMiddleware(http.HandlerFunc(handleCardDav)))
+	mux.Handle("/.well-known/", http.HandlerFunc(handleWellKnown))
 	mux.Handle("/pub/{name}", http.HandlerFunc(handlePubFile))
 	mux.Handle("/admin/user", BearerGlobalAuthMiddleware(http.HandlerFunc(handleUserAdmin)))
 	mux.Handle("/user/file", BearerAuthMiddleware(http.HandlerFunc(handleApiFile)))
 	mux.Handle("/user/pub", BearerAuthMiddleware(http.HandlerFunc(handleApiPubFile)))
 	return mux
+}
+func handleWellKnown(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Well-known request: %s %s", r.Method, r.URL.Path)
+	if r.URL.Path == "/.well-known/caldav" {
+		http.Redirect(w, r, "/caldav", http.StatusFound)
+	}
+	if r.URL.Path == "/.well-known/carddav" {
+		http.Redirect(w, r, "/carddav", http.StatusFound)
+	}
+}
+func handleCalDav(w http.ResponseWriter, r *http.Request) {
+	back := &iCal.Backend{}
+	handle := &caldav.Handler{
+		Backend: back,
+		Prefix:  "/caldav",
+	}
+	handle.ServeHTTP(w, r)
+}
+func handleCardDav(w http.ResponseWriter, r *http.Request) {
+	//back := ICard.CardBackend{
+	//}
+	handle := &carddav.Handler{
+		Backend: &ICard.CardBackend{},
+		Prefix:  "/carddav",
+	}
+	handle.ServeHTTP(w, r)
 }
 
 // jsonResponse sends a JSON response with the given status code and data.
