@@ -58,3 +58,25 @@ Mais informações podem ser obtidas em [test.http](test.http).
 ```bash
 curl -X POST -H "Authorization: meu_token_secreto" -H "Content-Type: application/json" -d '{"username": "novo_usuario", "password": "senha_forte"}' http://localhost:8080/users
 ```
+
+### Variáveis de Ambiente
+```yaml
+# conf.yml
+
+# Configurações principais
+APP_NAME: "DavServer"
+DB_DIR: "/tmp/badgerDB"
+PORT: 8080
+SHARE_ROOT_DIR: "./root"
+TIME_FORMAT: "02-Jan-2006"
+TIME_ZONE: "America/Sao_Paulo"
+GLOBAL_TOKEN: "123456"
+
+# Configurações I2P
+I2P_CFG:
+  ENABLED: false
+  HTTP_HOST_AND_PORT: "127.0.0.1:7672"
+  URL: "127.0.0.1:7672"
+  SAM_ADDR: "127.0.0.1:7656"
+  KEY_PATH: "./"
+```
