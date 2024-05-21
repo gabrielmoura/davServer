@@ -5,6 +5,7 @@ import (
 	"flag"
 	"github.com/spf13/viper"
 	"log"
+	"path/filepath"
 	"regexp"
 )
 
@@ -25,6 +26,7 @@ type I2PCfg struct {
 	Url             string `mapstructure:"URL"`
 	HttpsUrl        string `mapstructure:"HTTPS_URL"`
 	SAMAddr         string `mapstructure:"SAM_ADDR"`
+	KeyPath         string `mapstructure:"KEY_PATH"`
 }
 
 var (
@@ -53,6 +55,7 @@ func loadByFlag() error {
 			Url:             "127.0.0.1:7672",
 			HttpsUrl:        "",
 			SAMAddr:         "127.0.0.1:7656",
+			KeyPath:         "./",
 		},
 	}
 	// Atualiza a variável global Conf
@@ -74,6 +77,7 @@ func loadByConfigFile() error {
 	vip.SetDefault("I2P_CFG.ENABLED", false)
 	vip.SetDefault("I2P_CFG.SAM_ADDR", "127.0.0.1:7656")
 	vip.SetDefault("I2P_CFG.HTTP_HOST_AND_PORT", "127.0.0.1:7672")
+	vip.SetDefault("I2P_CFG.KEY_PATH", "./")
 
 	// Lendo o arquivo de configuração conf.yml
 	vip.SetConfigName("conf")
@@ -117,4 +121,8 @@ func LoadConfig() error {
 		log.Printf("Carregando configurações por flag")
 		return loadByFlag()
 	}
+}
+
+func (c *Cfg) GetI2pPath(afterName string) string {
+	return filepath.Join(c.I2PCfg.KeyPath, c.AppName+afterName)
 }

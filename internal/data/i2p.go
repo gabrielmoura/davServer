@@ -6,6 +6,12 @@ import (
 	"github.com/gabrielmoura/davServer/config"
 )
 
+type I2PKey struct {
+	Private string
+	Public  string
+	Url     string
+}
+
 func deserializeI2pCfg(data []byte) (*config.I2PCfg, error) {
 	var i2pCfg *config.I2PCfg
 	err := json.Unmarshal(data, &i2pCfg)
@@ -40,4 +46,28 @@ func readI2pConfig(db *badger.DB) (*config.I2PCfg, error) {
 		})
 	})
 	return i2pCfg, err
+}
+
+func WriteI2pKey(i2pKey *I2PKey) error {
+	return dB.Update(func(txn *badger.Txn) error {
+		data, err := json.Marshal(i2pKey)
+		if err != nil {
+			return err
+		}
+		return txn.Set([]byte("i2pKey"), data)
+	})
+}
+func ReadI2pKey() (*I2PKey, error) {
+	var i2pKey *I2PKey
+	err := dB.View(func(txn *badger.Txn) error {
+		item, err := txn.Get([]byte("i2pKey"))
+		if err != nil {
+			return err
+		}
+		return item.Value(func(val []byte) error {
+			err := json.Unmarshal(val, &i2pKey)
+			return err
+		})
+	})
+	return i2pKey, err
 }

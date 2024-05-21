@@ -87,7 +87,7 @@ func portCheck(addr string) (status bool, faddr string, err error) {
 	return
 }
 func waitPass(afterName string) (bool, net.Listener, error) {
-	listener, err := sam.I2PListener(config.Conf.AppName+afterName, "127.0.0.1:7656", config.Conf.AppName+afterName)
+	listener, err := sam.I2PListener(config.Conf.AppName+afterName, "127.0.0.1:7656", config.Conf.GetI2pPath(afterName))
 	if err != nil {
 		panic(err)
 	}
