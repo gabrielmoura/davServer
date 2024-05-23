@@ -5,10 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gabrielmoura/davServer/config"
+	"github.com/gabrielmoura/davServer/internal/backup"
 	"github.com/gabrielmoura/davServer/internal/data"
 	mux "github.com/gabrielmoura/davServer/internal/http"
 	"github.com/gabrielmoura/davServer/internal/i2p"
-	"log"
+	"github.com/gabrielmoura/davServer/internal/log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -17,14 +18,20 @@ import (
 )
 
 func main() {
-	log.Println("Carregar configurações")
+	log.InitLogger()
+
+	log.Logger.Info("Carregar configurações")
 	err := config.LoadConfig()
 	if err != nil {
 		return
 	}
 
-	log.Println("Iniciar banco de dados")
+	log.Logger.Info("Iniciar banco de dados")
 	err = data.InitDB()
+	if err != nil {
+		return
+	}
+	err = backup.HandleBackup()
 	if err != nil {
 		return
 	}
@@ -39,29 +46,28 @@ func main() {
 
 	// Start server in a goroutine
 	go func() {
-		log.Println("Iniciando o servidor...")
+		log.Logger.Info("Iniciando o servidor...")
 		if config.Conf.I2PCfg.Enabled {
 			ls, err := i2p.InitI2P()
 			if err != nil {
-				log.Fatalf("Erro ao iniciar o servidor I2P: %v\n", err)
+				panic(fmt.Sprintf("Erro ao iniciar o servidor I2P: %v\n", err))
 			}
-			fmt.Printf("Servidor I2P iniciado em http://%s\n", ls.Addr())
+			log.Logger.Info(fmt.Sprintf("Servidor WebDAV iniciado em dav://%s/dav/", ls.Addr()))
 			if err := server.Serve(ls); err != nil {
-				log.Fatalf("Erro ao iniciar o servidor: %v\n", err)
+				panic(fmt.Sprintf("Erro ao iniciar o servidor: %v\n", err))
 			}
 		} else {
-			fmt.Println("Servidor WebDAV iniciado em dav://localhost:8080/dav/")
+			log.Logger.Info(fmt.Sprintf("Servidor WebDAV iniciado em dav://localhost:%d/dav/", config.Conf.Port))
 			if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-				log.Fatalf("Erro ao iniciar o servidor: %v\n", err)
+				panic(fmt.Sprintf("Erro ao iniciar o servidor: %v\n", err))
 			}
 		}
-
 	}()
 
 	// Block until a signal is received
 	<-stop
 
-	fmt.Println("\nIniciando o desligamento gracioso do servidor...")
+	log.Logger.Info("Desligando o servidor...")
 
 	// Create a deadline for the shutdown
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -69,8 +75,8 @@ func main() {
 
 	// Shutdown the server gracefully
 	if err := server.Shutdown(ctx); err != nil {
-		log.Fatalf("Erro ao desligar o servidor: %v\n", err)
+		panic(fmt.Sprintf("Erro ao desligar o servidor: %v\n", err))
 	}
 
-	fmt.Println("Servidor desligado com sucesso.")
+	log.Logger.Info("Servidor desligado com sucesso.")
 }

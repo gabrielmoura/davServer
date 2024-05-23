@@ -3,8 +3,8 @@ package config
 import (
 	"errors"
 	"flag"
+	"github.com/gabrielmoura/davServer/internal/log"
 	"github.com/spf13/viper"
-	"log"
 	"path/filepath"
 	"regexp"
 )
@@ -35,6 +35,8 @@ var (
 	rootDirectory = flag.String("root", "./root", "Diretório raiz do servidor WebDAV")
 	globalToken   = flag.String("token", "123456", "Token de autenticação")
 	port          = flag.Int("port", 8080, "Server Port")
+	ExportUsers   = flag.Bool("export", false, "Export Users")
+	ImportUsers   = flag.Bool("import", false, "Import Users")
 
 	Conf *Cfg
 )
@@ -47,7 +49,7 @@ func loadByFlag() error {
 		AppName:      "DavServer",
 		TimeFormat:   "02-Jan-2006",
 		TimeZone:     "America/Sao_Paulo",
-		DBDir:        "/tmp/badgerDB",
+		DBDir:        "/tmp/DavServer",
 		I2PCfg: &I2PCfg{
 			Enabled:         *enabledI2P,
 			HttpHostAndPort: "127.0.0.1:7672",
@@ -70,7 +72,7 @@ func loadByConfigFile() error {
 	vip.SetDefault("PORT", 8080)
 	vip.SetDefault("SHARE_ROOT_DIR", "./root")
 	vip.SetDefault("GLOBAL_TOKEN", "123456")
-	vip.SetDefault("DB_DIR", "/tmp/badgerDB")
+	vip.SetDefault("DB_DIR", "/tmp/DavServer")
 	vip.SetDefault("APP_NAME", "DavServer")
 	vip.SetDefault("TIME_FORMAT", "02-Jan-2006")
 	vip.SetDefault("TIME_ZONE", "America/Sao_Paulo")
@@ -115,10 +117,10 @@ func loadByConfigFile() error {
 func LoadConfig() error {
 	flag.Parse()
 	if *enabledConfig {
-		log.Printf("Carregando configurações do arquivo")
+		log.Logger.Info("Carregando configurações do arquivo")
 		return loadByConfigFile()
 	} else {
-		log.Printf("Carregando configurações por flag")
+		log.Logger.Info("Carregando configurações por flag")
 		return loadByFlag()
 	}
 }

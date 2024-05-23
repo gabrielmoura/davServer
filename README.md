@@ -25,6 +25,8 @@ Um servidor WebDAV simples com autenticação básica e API para gerenciamento d
 - `-i2p`: Habilita o uso do I2P.
 - `-config`: Habilita o uso de um arquivo de configuração.
 - `-h`: Exibe a ajuda com as opções disponíveis.
+- `-export`: Exporta os usuários (./users.json).
+- `-import`: Importa os usuários (./users.json).
 
 ### API
 

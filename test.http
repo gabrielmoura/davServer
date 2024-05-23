@@ -9,3 +9,31 @@ Content-Type: application/x-www-form-urlencoded
 
 username = user1 &
 password = senha1
+
+### Get All Files
+## Bearer Token - base64(username:password)
+GET http://localhost:8080/user/file
+Authorization: Bearer dXNlcjE6c2VuaGEx
+
+### Upload File
+## Bearer Token - base64(username:password)
+POST http://localhost:8080/user/file
+Authorization: Bearer dXNlcjE6c2VuaGEx
+Content-Type: multipart/form-data
+
+file = file.txt
+
+### Download File
+## Bearer Token - base64(username:password)
+GET http://localhost:8080/user/file/{fileId}
+Authorization: Bearer dXNlcjE6c2VuaGEx
+
+### Delete File
+## Bearer Token - base64(username:password)
+DELETE http://localhost:8080/user/file/{fileId}
+Authorization: Bearer dXNlcjE6c2VuaGEx
+
+### Get File Metadata
+## Bearer Token - base64(username:password)
+GET http://localhost:8080/user/file/{fileId}/metadata
+Authorization: Bearer dXNlcjE6c2VuaGEx

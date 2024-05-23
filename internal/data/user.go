@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/dgraph-io/badger/v4"
-	"log"
+	"github.com/gabrielmoura/davServer/internal/log"
 	"os"
 )
 
@@ -15,9 +15,6 @@ type User struct {
 	Username string
 	Password string
 }
-
-// ResponseMap is a generic map for JSON responses.
-type ResponseMap map[string]interface{}
 
 // GetValidUsers returns the list of valid users.
 func GetValidUsers() []User {
@@ -30,7 +27,7 @@ func CreateUser(user User) []User {
 	users, _ := readUsers(dB)
 	users = append(users, user)
 	if err := writeUsers(dB, users); err != nil {
-		fmt.Println(err)
+		log.Logger.Error(fmt.Sprintf("Erro ao criar usuário: %v\n", err))
 	}
 	return users
 }
@@ -45,7 +42,7 @@ func DeleteUser(username string) []User {
 		}
 	}
 	if err := writeUsers(dB, users); err != nil {
-		fmt.Println(err)
+		log.Logger.Error(fmt.Sprintf("Erro ao deletar usuário: %v\n", err))
 	}
 	return users
 }
@@ -70,8 +67,7 @@ func GenerateMD5Hash(password string) string {
 // CreateUserDirectory creates a directory for a user.
 func CreateUserDirectory(path string) (string, error) {
 	if err := os.Mkdir(path, 0755); err != nil {
-		log.Printf("Erro ao criar pasta do usuário: %v\n", err)
-		log.Printf("Pasta: %s\n", path)
+		log.Logger.Error(fmt.Sprintf("Erro ao criar pasta do usuário: %v Path:%v\n", err, path))
 		return "", err
 	}
 	return path, nil
