@@ -39,11 +39,11 @@ Authorization: Bearer meu_token_secreto
 
 **Endpoints:**
 
-- `POST /admin/users`: Cria um novo usuário.
-- `GET /admin/users`: Lista todos os usuários.
-- `DELETE /users`: Deleta um usuário
+- `POST /admin/user`: Cria um novo usuário.
+- `GET /admin/user`: Lista todos os usuários.
+- `DELETE /admin/user`: Deleta um usuário
 
-Mais informações podem ser obtidas em [test.http](test.http).
+Mais informações podem ser obtidas em [Arquivo Http](test.http) ou [Coleção Postman](DavServer.postman_collection.json).
 
 #### Observações
 
@@ -51,9 +51,10 @@ Mais informações podem ser obtidas em [test.http](test.http).
   da requisição com o nome "Authorization".
 - /admin/users O token esperado é um token simples e o token deve ser passado no header da requisição com o nome "
   Authorization" definido no momento da execução do servidor.
-- O caminho do DB é por padrão `/tmp/badgerDB`, altere o caminho para não perder os dados ao reiniciar o servidor.
+- O caminho do DB é por padrão `/tmp/DavServer`, altere o caminho para não perder os dados ao reiniciar o servidor.
 - Para Usar com I2P é necessário que o SAM esteja ativo e configurado para o servidor.
 - Nenhum usuário é criado por padrão, é necessário criar um usuário para poder acessar o servidor.
+- É possível traduzir as mensagens do Srv em `internal/msg`
 
 ### Exemplo de Requisição (cURL)
 
@@ -67,7 +68,7 @@ curl -X POST -H "Authorization: meu_token_secreto" -H "Content-Type: application
 
 # Configurações principais
 APP_NAME: "DavServer"
-DB_DIR: "/tmp/badgerDB"
+DB_DIR: "/tmp/DavServer"
 PORT: 8080
 SHARE_ROOT_DIR: "./root"
 TIME_FORMAT: "02-Jan-2006"
@@ -75,6 +76,7 @@ TIME_ZONE: "America/Sao_Paulo"
 GLOBAL_TOKEN: "123456"
 # Configuração Padrão do Servidor
 SRV:
+  # Caso true removerá a pasta do usuário ao remover o usuário.
   DELETE_FOLDER: false
   CHUNK_SIZE: 500
 # Configurações I2P

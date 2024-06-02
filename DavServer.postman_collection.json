@@ -1,0 +1,554 @@
+{
+	"info": {
+		"_postman_id": "ac77ddfe-a32d-4cc8-af9e-014b7e2bffb6",
+		"name": "DavServer",
+		"description": "Servidor Dav\n\nA Simple WebDAV Server",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1076818"
+	},
+	"item": [
+		{
+			"name": "pub",
+			"item": [
+				{
+					"name": "Get Public File",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/pub/test.png?hash=159&name",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"pub",
+								"test.png"
+							],
+							"query": [
+								{
+									"key": "hash",
+									"value": "159"
+								},
+								{
+									"key": "name",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "User",
+					"item": [
+						{
+							"name": "Get Users",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/admin/user",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"user"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Get Users[200]",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/admin/user",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"admin",
+												"user"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 01 Jun 2024 22:30:06 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "79"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"users\": [\n        {\n            \"Username\": \"user1\",\n            \"Password\": \"92f20dafc5e5ac1c66820903c492cc04\"\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "Create User",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "user1",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "senha1",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/admin/user",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin",
+										"user"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Create User[200]",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "username",
+													"value": "user1",
+													"type": "text"
+												},
+												{
+													"key": "password",
+													"value": "senha1",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{url}}/admin/user",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"admin",
+												"user"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 01 Jun 2024 22:29:10 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "42"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Usuário criado com sucesso\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Delete User",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{token}}/admin/user",
+									"host": [
+										"{{token}}"
+									],
+									"path": [
+										"admin",
+										"user"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{globalToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "file",
+					"item": [
+						{
+							"name": "Get File",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/user/file/love-birds-3504-x-2336-picture-mhpsw9hkuxy5eq5t.jpg",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"user",
+										"file",
+										"love-birds-3504-x-2336-picture-mhpsw9hkuxy5eq5t.jpg"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Files",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/user/file",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"user",
+										"file"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get MetaData File",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/user/file/{fileId}/metadata",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"user",
+										"file",
+										"{fileId}",
+										"metadata"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create File",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": "/media/love-birds-3504-x-2336-picture-mhpsw9hkuxy5eq5t.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/user/file",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"user",
+										"file"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Create File[200]",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "file",
+													"type": "file",
+													"src": "/media/love-birds-3504-x-2336-picture-mhpsw9hkuxy5eq5t.jpg"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{url}}/user/file",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"user",
+												"file"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 01 Jun 2024 22:40:12 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "28"
+										}
+									],
+									"cookie": [],
+									"body": "\"Arquivo salvo com sucesso\""
+								}
+							]
+						},
+						{
+							"name": "Delete File",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "fileId",
+											"value": "",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/user/file",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"user",
+										"file"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "pub",
+					"item": [
+						{
+							"name": "Publish File",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "path",
+											"value": "love-birds-3504-x-2336-picture-mhpsw9hkuxy5eq5t.jpg",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/user/pub",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"user",
+										"pub"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Published Files",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": []
+								},
+								"url": {
+									"raw": "{{url}}/user/pub",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"user",
+										"pub"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "userToken = base64(username:password)",
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{userToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "globalToken",
+			"value": "123456",
+			"type": "string"
+		},
+		{
+			"key": "userToken",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
