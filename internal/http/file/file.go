@@ -5,6 +5,7 @@ import (
 	"github.com/gabrielmoura/davServer/config"
 	"github.com/gabrielmoura/davServer/internal/data"
 	"github.com/gabrielmoura/davServer/internal/http/helper"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -115,11 +116,14 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	fileBytes, err := os.ReadFile(handler.Filename)
+	fileBytes := make([]byte, handler.Size)
+	_, err = file.Read(fileBytes)
 	if err != nil {
+		log.Printf("Erro: error to read archive %s", err)
 		http.Error(w, "Erro ao ler arquivo", http.StatusInternalServerError)
 		return
 	}
+
 	err = os.WriteFile(filepath.Join(userPath, handler.Filename), fileBytes, 0644)
 	if err != nil {
 		http.Error(w, "Erro ao salvar arquivo", http.StatusInternalServerError)

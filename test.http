@@ -7,8 +7,21 @@ POST http://localhost:8080/admin/user
 Authorization: Bearer 123456
 Content-Type: application/x-www-form-urlencoded
 
-username = user1 &
-password = senha1
+username=user1&password=senha1
+
+### Update User
+PUT http://localhost:8080/admin/user
+Authorization: Bearer 123456
+Content-Type: application/x-www-form-urlencoded
+
+username=user1&newpassword=newsenha1
+
+### Delete User
+DELETE http://localhost:8080/admin/user
+Authorization: Bearer 123456
+Content-Type: application/x-www-form-urlencoded
+
+username=user1
 
 ### Get All Files
 ## Bearer Token - base64(username:password)
@@ -21,7 +34,7 @@ POST http://localhost:8080/user/file
 Authorization: Bearer dXNlcjE6c2VuaGEx
 Content-Type: multipart/form-data
 
-file = file.txt
+file=@file.txt
 
 ### Download File
 ## Bearer Token - base64(username:password)
@@ -37,3 +50,27 @@ Authorization: Bearer dXNlcjE6c2VuaGEx
 ## Bearer Token - base64(username:password)
 GET http://localhost:8080/user/file/{fileId}/metadata
 Authorization: Bearer dXNlcjE6c2VuaGEx
+
+### Get Public File
+GET http://localhost:8080/pub/{filename}
+
+### Get Public Files
+## Bearer Token - base64(username:password)
+GET http://localhost:8080/user/pub
+Authorization: Bearer dXNlcjE6c2VuaGEx
+
+### Add Public File
+## Bearer Token - base64(username:password)
+POST http://localhost:8080/user/pub
+Authorization: Bearer dXNlcjE6c2VuaGEx
+Content-Type: application/x-www-form-urlencoded
+
+filename=file.txt
+
+### Delete Public File
+## Bearer Token - base64(username:password)
+DELETE http://localhost:8080/user/pub
+Authorization: Bearer dXNlcjE6c2VuaGEx
+Content-Type: application/x-www-form-urlencoded
+
+filename=file.txt

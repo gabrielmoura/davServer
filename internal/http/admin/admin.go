@@ -5,6 +5,7 @@ import (
 	"github.com/gabrielmoura/davServer/config"
 	"github.com/gabrielmoura/davServer/internal/data"
 	"github.com/gabrielmoura/davServer/internal/http/helper"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -31,6 +32,14 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	data.DeleteUser(username)
+	if config.Conf.Srv.DeleteFolder {
+		rootUserPath := filepath.Join(config.Conf.ShareRootDir, username)
+		err := os.RemoveAll(rootUserPath)
+		if err != nil {
+			log.Printf("Error: Erro ao remover pasta do usuário. %s", err)
+			return
+		}
+	}
 	helper.JsonResponse(w, http.StatusNoContent, helper.ResponseMap{"message": fmt.Sprintf("Usuário %s removido com sucesso", username)})
 }
 func createUser(w http.ResponseWriter, r *http.Request) {

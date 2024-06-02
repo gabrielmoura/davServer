@@ -73,7 +73,10 @@ SHARE_ROOT_DIR: "./root"
 TIME_FORMAT: "02-Jan-2006"
 TIME_ZONE: "America/Sao_Paulo"
 GLOBAL_TOKEN: "123456"
-
+# Configuração Padrão do Servidor
+SRV:
+  DELETE_FOLDER: false
+  CHUNK_SIZE: 500
 # Configurações I2P
 I2P_CFG:
   ENABLED: false

@@ -18,6 +18,7 @@ type Cfg struct {
 	TimeZone     string  `mapstructure:"TIME_ZONE"`
 	GlobalToken  string  `mapstructure:"GLOBAL_TOKEN"`
 	I2PCfg       *I2PCfg `mapstructure:"I2P_CFG"`
+	Srv          *Srv    `mapstructure:"SRV"`
 }
 type I2PCfg struct {
 	Enabled         bool   `mapstructure:"ENABLED"`
@@ -27,6 +28,10 @@ type I2PCfg struct {
 	HttpsUrl        string `mapstructure:"HTTPS_URL"`
 	SAMAddr         string `mapstructure:"SAM_ADDR"`
 	KeyPath         string `mapstructure:"KEY_PATH"`
+}
+type Srv struct {
+	DeleteFolder bool  `mapstructure:"DELETE_FOLDER"` // Delete
+	ChunkSize    int64 `mapstructure:"CHUNK_SIZE"`    // in MB
 }
 
 var (
@@ -50,6 +55,10 @@ func loadByFlag() error {
 		TimeFormat:   "02-Jan-2006",
 		TimeZone:     "America/Sao_Paulo",
 		DBDir:        "/tmp/DavServer",
+		Srv: &Srv{
+			ChunkSize:    500,
+			DeleteFolder: false,
+		},
 		I2PCfg: &I2PCfg{
 			Enabled:         *enabledI2P,
 			HttpHostAndPort: "127.0.0.1:7672",
@@ -80,6 +89,8 @@ func loadByConfigFile() error {
 	vip.SetDefault("I2P_CFG.SAM_ADDR", "127.0.0.1:7656")
 	vip.SetDefault("I2P_CFG.HTTP_HOST_AND_PORT", "127.0.0.1:7672")
 	vip.SetDefault("I2P_CFG.KEY_PATH", "./")
+	vip.SetDefault("SRV.DELETE_FOLDER", false)
+	vip.SetDefault("SRV.CHUNK_SIZE", 500)
 
 	// Lendo o arquivo de configuração conf.yml
 	vip.SetConfigName("conf")

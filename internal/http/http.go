@@ -43,7 +43,7 @@ func handleWebDAV(w http.ResponseWriter, r *http.Request) {
 	fs.ServeHTTP(w, r)
 }
 
-// handlePubFile handles get requests for public files.
+// handlePubFile Distribuição de arquivos Públicos
 func handlePubFile(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:

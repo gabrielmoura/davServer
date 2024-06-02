@@ -1,9 +1,11 @@
 package pub
 
 import (
+	"errors"
 	"github.com/gabrielmoura/davServer/config"
 	"github.com/gabrielmoura/davServer/internal/data"
 	"github.com/gabrielmoura/davServer/internal/http/helper"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -13,7 +15,6 @@ import (
 func HandleApiUserPubFile(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPost:
-		var File data.PubFile
 		username := r.Context().Value("user").(data.User).Username
 		// Pegue o caminho do arquivo
 		path := r.FormValue("path")
@@ -29,13 +30,26 @@ func HandleApiUserPubFile(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Erro ao detectar tipo MIME", http.StatusInternalServerError)
 			return
 		}
+
 		// Pegue informações do arquivo
-		File.New(info.Name(), mime, info.Size(), username)
+		File := data.New(info.Name(), mime, info.Size(), username)
 		if err := File.Save(); err != nil {
+			if errors.Is(data.ErrPubArchiveExist, err) {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			log.Printf("Error: ao salvar dado %s", err)
 			http.Error(w, "Erro ao salvar arquivo", http.StatusInternalServerError)
 			return
 		}
-		helper.JsonResponse(w, http.StatusCreated, helper.ResponseMap{"message": "Arquivo salvo com sucesso"})
+		helper.JsonResponse(w, http.StatusCreated, helper.ResponseMap{"message": "Arquivo salvo com sucesso", "file": File})
+	case http.MethodGet:
+		username := r.Context().Value("user").(data.User).Username
+		pubFiles, err := data.ListPubFile(username)
+		if err != nil {
+			http.Error(w, "Erro", http.StatusServiceUnavailable)
+		}
+		helper.JsonResponse(w, http.StatusOK, pubFiles)
 	default:
 		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
 	}
