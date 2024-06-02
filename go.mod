@@ -10,7 +10,6 @@ require (
 	github.com/gabrielmoura/go v0.0.0-20240523165529-159656834947
 	github.com/google/uuid v1.4.0
 	github.com/spf13/viper v1.18.2
-	github.com/vmihailenco/msgpack/v5 v5.4.1
 	go.uber.org/zap v1.21.0
 	golang.org/x/net v0.25.0
 )
@@ -39,7 +38,6 @@ require (
 	github.com/spf13/cast v1.6.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
-	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect

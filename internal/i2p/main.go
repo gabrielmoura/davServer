@@ -7,7 +7,8 @@ import (
 	sam "github.com/eyedeekay/sam3/helper"
 	"github.com/gabrielmoura/davServer/config"
 	"github.com/gabrielmoura/davServer/internal/data"
-	"log"
+	"github.com/gabrielmoura/davServer/internal/log"
+	"go.uber.org/zap"
 	"net"
 	"os"
 	"strings"
@@ -28,28 +29,28 @@ func save(c *config.Cfg) error {
 
 func InitI2P() (net.Listener, error) {
 	if config.Conf.I2PCfg.Enabled {
-		log.Println("Starting I2P Mode")
+		log.Logger.Info("Starting I2P Mode")
 		if err := os.Setenv("NO_PROXY", "127.0.0.1:7672"); err != nil {
 			panic(err)
 		}
 		time.Sleep(time.Second * 3)
 
 		for !checksam.CheckSAMAvailable(config.Conf.I2PCfg.SAMAddr) {
-			log.Println("Checking SAM")
+			log.Logger.Info("Checking SAM")
 			time.Sleep(time.Second * 15)
-			log.Println("Waiting for SAM")
+			log.Logger.Info("Waiting for SAM")
 		}
-		log.Println("SAM is available")
+		log.Logger.Info("SAM is available")
 
 		if status, faddr, err := portCheck(config.Conf.I2PCfg.HttpHostAndPort); err == nil {
 			if status {
-				log.Fatal(err, faddr)
+				log.Logger.Fatal(faddr, zap.Error(err))
 				return nil, err
 			}
 		} else {
-			log.Fatal(err)
+			log.Logger.Fatal(err.Error())
 		}
-		log.Println("Starting I2P server")
+		log.Logger.Info("Starting I2P server")
 
 		_, listener, err := waitPass("")
 		if err != nil {
@@ -65,7 +66,7 @@ func portCheck(addr string) (status bool, faddr string, err error) {
 
 	config.Conf.I2PCfg.Host = host
 	if err != nil {
-		log.Fatal("Invalid address")
+		log.Logger.Fatal("Invalid address")
 	}
 	if host == "" {
 		host = "127.0.0.1"
@@ -76,13 +77,13 @@ func portCheck(addr string) (status bool, faddr string, err error) {
 		if strings.Contains(err.Error(), "refused") {
 			err = nil
 		}
-		log.Println("Connecting error:", err)
+		log.Logger.Error("Connecting error:", zap.Error(err))
 	}
 	if conn != nil {
 		defer conn.Close()
 		status = true
 		faddr = net.JoinHostPort(host, port)
-		log.Println("Opened", net.JoinHostPort(host, port))
+		log.Logger.Info(fmt.Sprintf("Opened %s", net.JoinHostPort(host, port)))
 	}
 	return
 }
@@ -101,7 +102,7 @@ func waitPass(afterName string) (bool, net.Listener, error) {
 	}
 	config.Conf.I2PCfg.Url = "http://" + listener.Addr().(i2pkeys.I2PAddr).Base32()
 	if err := save(config.Conf); err != nil {
-		log.Println(err)
+		log.Logger.Error(err.Error())
 	}
 	return true, listener, err
 }

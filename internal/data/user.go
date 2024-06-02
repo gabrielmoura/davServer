@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/dgraph-io/badger/v4"
 	"github.com/gabrielmoura/davServer/internal/log"
+	"go.uber.org/zap"
 	"os"
 )
 
@@ -19,6 +20,21 @@ const IndexUsersName = "users"
 type User struct {
 	Username string
 	Password string
+}
+
+func UpdateUser(user User) error {
+	users, _ := readUsers(dB)
+	for _, u := range users {
+		if u.Username == user.Username {
+			u = user
+		}
+	}
+	err := writeUsers(dB, users)
+	if err != nil {
+		log.Logger.Error("Erro ao atualizar usuário", zap.Error(err))
+		return err
+	}
+	return nil
 }
 
 // GetValidUsers returns the list of valid users.
