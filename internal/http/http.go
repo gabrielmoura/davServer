@@ -6,6 +6,7 @@ import (
 	"github.com/gabrielmoura/davServer/internal/data"
 	"github.com/gabrielmoura/davServer/internal/http/helper"
 	"github.com/gabrielmoura/davServer/internal/log"
+	"github.com/gabrielmoura/davServer/internal/msg"
 	"github.com/gabrielmoura/go/pkg/ternary"
 	"golang.org/x/net/webdav"
 	"net/http"
@@ -17,14 +18,14 @@ import (
 func handleWebDAV(w http.ResponseWriter, r *http.Request) {
 	user, ok := r.Context().Value("user").(data.User)
 	if !ok || user.Username == "" {
-		http.Error(w, "Usuário inválido", http.StatusUnauthorized)
+		http.Error(w, msg.UserInvalid, http.StatusUnauthorized)
 		return
 	}
 
 	userDir := filepath.Join(config.Conf.ShareRootDir, user.Username)
 	if _, err := os.Stat(userDir); os.IsNotExist(err) {
-		log.Logger.Error(fmt.Sprintf("Pasta do usuário não encontrada: %s", userDir))
-		http.Error(w, "Pasta do usuário não encontrada", http.StatusNotFound)
+		log.Logger.Error(fmt.Sprintf("%s: %s", msg.FolderNotFound, userDir))
+		http.Error(w, msg.FolderNotFound, http.StatusNotFound)
 		return
 	}
 
@@ -50,22 +51,22 @@ func handlePubFile(w http.ResponseWriter, r *http.Request) {
 		hash := r.URL.Query().Get("hash")
 		name := r.URL.Query().Get("name")
 		if hash == "" {
-			http.Error(w, "Hash é obrigatório", http.StatusBadRequest)
+			http.Error(w, msg.HashRequired, http.StatusBadRequest)
 			return
 		}
 		metaFile, err := data.GetPubFile(hash)
 		if err != nil {
-			http.Error(w, "Arquivo não encontrado", http.StatusNotFound)
+			http.Error(w, msg.FileNotFound, http.StatusNotFound)
 			return
 		}
 		fullPath := filepath.Join(config.Conf.ShareRootDir, metaFile.Owner, metaFile.Name)
 		fileData, err := helper.FileToBase64(fullPath)
 		if err != nil {
-			http.Error(w, "Erro ao codificar arquivo em base64", http.StatusInternalServerError)
+			http.Error(w, msg.ErrEncodingBase64, http.StatusInternalServerError)
 			return
 		}
 		helper.FileResponse(w, http.StatusOK, ternary.OrString(name, metaFile.Name), metaFile.Size, metaFile.Mime, []byte(fileData))
 	default:
-		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+		http.Error(w, msg.MethodNotAllowed, http.StatusMethodNotAllowed)
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/gabrielmoura/davServer/internal/data"
 	"github.com/gabrielmoura/davServer/internal/http/helper"
 	"github.com/gabrielmoura/davServer/internal/log"
+	"github.com/gabrielmoura/davServer/internal/msg"
 	"go.uber.org/zap"
 	"net/http"
 	"os"
@@ -56,7 +57,7 @@ func readFile(path string) ([]byte, error) {
 func HandleApiFile(w http.ResponseWriter, r *http.Request) {
 	user, ok := r.Context().Value("user").(data.User)
 	if !ok {
-		http.Error(w, "Usuário inválido", http.StatusUnauthorized)
+		http.Error(w, msg.UserInvalid, http.StatusUnauthorized)
 		return
 	}
 	ctx := context.WithValue(r.Context(), "userPath", filepath.Join(config.Conf.ShareRootDir, user.Username))
@@ -77,7 +78,7 @@ func HandleApiFile(w http.ResponseWriter, r *http.Request) {
 	case http.MethodDelete:
 		deleteFile(w, r.WithContext(ctx))
 	default:
-		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+		http.Error(w, msg.MethodNotAllowed, http.StatusMethodNotAllowed)
 	}
 }
 
@@ -137,8 +138,8 @@ func deleteFile(w http.ResponseWriter, r *http.Request) {
 	fileId := r.URL.Query().Get("fileId")
 	err := os.Remove(filepath.Join(userPath, fileId))
 	if err != nil {
-		http.Error(w, "Erro ao excluir arquivo", http.StatusInternalServerError)
+		http.Error(w, msg.ErrDelete, http.StatusInternalServerError)
 		return
 	}
-	helper.JsonResponse(w, http.StatusOK, "Arquivo excluído com sucesso")
+	helper.JsonResponse(w, http.StatusOK, msg.SuccRemoved)
 }

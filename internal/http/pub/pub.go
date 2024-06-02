@@ -7,6 +7,7 @@ import (
 	"github.com/gabrielmoura/davServer/internal/data"
 	"github.com/gabrielmoura/davServer/internal/http/helper"
 	"github.com/gabrielmoura/davServer/internal/log"
+	"github.com/gabrielmoura/davServer/internal/msg"
 	"go.uber.org/zap"
 	"net/http"
 	"os"
@@ -24,12 +25,12 @@ func HandleApiUserPubFile(w http.ResponseWriter, r *http.Request) {
 		// verifica se o arquivo existe
 		info, err := os.Stat(fullPath)
 		if os.IsNotExist(err) {
-			http.Error(w, "Arquivo não encontrado", http.StatusNotFound)
+			http.Error(w, msg.FileNotFound, http.StatusNotFound)
 			return
 		}
 		mime, err := helper.GetFileMimeType(fullPath)
 		if err != nil {
-			http.Error(w, "Erro ao detectar tipo MIME", http.StatusInternalServerError)
+			http.Error(w, msg.ErrDetectingMIME, http.StatusInternalServerError)
 			return
 		}
 
@@ -40,11 +41,11 @@ func HandleApiUserPubFile(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			log.Logger.Error(fmt.Sprintf("Erro ao salvar %s", info.Name()), zap.Error(err))
-			http.Error(w, "Erro ao salvar arquivo", http.StatusInternalServerError)
+			log.Logger.Error(fmt.Sprintf("%s %s", msg.ErrSavingFile, info.Name()), zap.Error(err))
+			http.Error(w, msg.ErrSavingFile, http.StatusInternalServerError)
 			return
 		}
-		helper.JsonResponse(w, http.StatusCreated, helper.ResponseMap{"message": "Arquivo salvo com sucesso", "file": File})
+		helper.JsonResponse(w, http.StatusCreated, helper.ResponseMap{"message": msg.SuccFileSaved, "file": File})
 	case http.MethodGet:
 		username := r.Context().Value("user").(data.User).Username
 		pubFiles, err := data.ListPubFile(username)
@@ -56,11 +57,11 @@ func HandleApiUserPubFile(w http.ResponseWriter, r *http.Request) {
 		hash := r.FormValue("hash")
 		err := data.DeletePubFile(hash)
 		if err != nil {
-			http.Error(w, "Erro ao Deletar", http.StatusInternalServerError)
+			http.Error(w, msg.ErrDelete, http.StatusInternalServerError)
 			return
 		}
-		helper.JsonResponse(w, http.StatusOK, helper.ResponseMap{"message": "Removido com sucesso"})
+		helper.JsonResponse(w, http.StatusOK, helper.ResponseMap{"message": msg.SuccRemoved})
 	default:
-		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+		http.Error(w, msg.MethodNotAllowed, http.StatusMethodNotAllowed)
 	}
 }
