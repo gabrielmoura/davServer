@@ -8,10 +8,12 @@ import (
 
 var dB *badger.DB
 
+const IndexPubName = "files"
+
 func readPublicFiles(db *badger.DB) ([]PubFile, error) {
 	var files []PubFile
 	err := db.View(func(txn *badger.Txn) error {
-		item, err := txn.Get([]byte("files"))
+		item, err := txn.Get([]byte(IndexPubName))
 		if err != nil {
 			return err
 		}
@@ -29,7 +31,7 @@ func writePublicFiles(db *badger.DB, files []PubFile) error {
 		if err != nil {
 			return err
 		}
-		return txn.Set([]byte("files"), data)
+		return txn.Set([]byte(IndexPubName), data)
 	})
 }
 

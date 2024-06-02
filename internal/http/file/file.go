@@ -5,7 +5,8 @@ import (
 	"github.com/gabrielmoura/davServer/config"
 	"github.com/gabrielmoura/davServer/internal/data"
 	"github.com/gabrielmoura/davServer/internal/http/helper"
-	"log"
+	"github.com/gabrielmoura/davServer/internal/log"
+	"go.uber.org/zap"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -119,7 +120,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	fileBytes := make([]byte, handler.Size)
 	_, err = file.Read(fileBytes)
 	if err != nil {
-		log.Printf("Erro: error to read archive %s", err)
+		log.Logger.Error("Erro ao ler arquivo", zap.Error(err))
 		http.Error(w, "Erro ao ler arquivo", http.StatusInternalServerError)
 		return
 	}

@@ -3,8 +3,9 @@ package data
 import (
 	"errors"
 	"github.com/dgraph-io/badger/v4"
+	"github.com/gabrielmoura/davServer/internal/log"
 	"github.com/google/uuid"
-	"log"
+	"go.uber.org/zap"
 )
 
 var (
@@ -53,7 +54,8 @@ func CreatePubFile(file PubFile) error {
 			fileSlice = append(fileSlice, file)
 			return writePublicFiles(dB, fileSlice)
 		}
-		log.Printf("Erro: Erro ao buscar matriz %s", err)
+
+		log.Logger.Info("Erro ao buscar matriz %s", zap.Error(err))
 		return err
 	}
 	if isRepeated(files, file) {

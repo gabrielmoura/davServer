@@ -5,7 +5,8 @@ import (
 	"github.com/gabrielmoura/davServer/config"
 	"github.com/gabrielmoura/davServer/internal/data"
 	"github.com/gabrielmoura/davServer/internal/http/helper"
-	"log"
+	"github.com/gabrielmoura/davServer/internal/log"
+	"go.uber.org/zap"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -36,7 +37,7 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 		rootUserPath := filepath.Join(config.Conf.ShareRootDir, username)
 		err := os.RemoveAll(rootUserPath)
 		if err != nil {
-			log.Printf("Error: Erro ao remover pasta do usuário. %s", err)
+			log.Logger.Error("Erro ao remover pasta do usuário.", zap.Error(err))
 			return
 		}
 	}

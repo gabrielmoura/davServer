@@ -4,11 +4,16 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/dgraph-io/badger/v4"
 	"github.com/gabrielmoura/davServer/internal/log"
 	"os"
 )
+
+var ErrUserNotFound = errors.New("usuário não encontrado")
+
+const IndexUsersName = "users"
 
 // User represents a user with a username and password.
 type User struct {
@@ -55,7 +60,7 @@ func GetUser(username string) (User, error) {
 			return u, nil
 		}
 	}
-	return User{}, fmt.Errorf("usuário não encontrado")
+	return User{}, ErrUserNotFound
 }
 
 // GenerateMD5Hash generates an MD5 hash of a given password.
@@ -79,13 +84,13 @@ func writeUsers(db *badger.DB, user []User) error {
 		if err != nil {
 			return err
 		}
-		return txn.Set([]byte("users"), data)
+		return txn.Set([]byte(IndexUsersName), data)
 	})
 }
 func readUsers(db *badger.DB) ([]User, error) {
 	var user []User
 	err := db.View(func(txn *badger.Txn) error {
-		item, err := txn.Get([]byte("users"))
+		item, err := txn.Get([]byte(IndexUsersName))
 		if err != nil {
 			return err
 		}

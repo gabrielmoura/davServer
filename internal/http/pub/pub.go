@@ -2,10 +2,12 @@ package pub
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gabrielmoura/davServer/config"
 	"github.com/gabrielmoura/davServer/internal/data"
 	"github.com/gabrielmoura/davServer/internal/http/helper"
-	"log"
+	"github.com/gabrielmoura/davServer/internal/log"
+	"go.uber.org/zap"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -38,7 +40,7 @@ func HandleApiUserPubFile(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			log.Printf("Error: ao salvar dado %s", err)
+			log.Logger.Error(fmt.Sprintf("Erro ao salvar %s", info.Name()), zap.Error(err))
 			http.Error(w, "Erro ao salvar arquivo", http.StatusInternalServerError)
 			return
 		}
@@ -50,6 +52,14 @@ func HandleApiUserPubFile(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Erro", http.StatusServiceUnavailable)
 		}
 		helper.JsonResponse(w, http.StatusOK, pubFiles)
+	case http.MethodDelete:
+		hash := r.FormValue("hash")
+		err := data.DeletePubFile(hash)
+		if err != nil {
+			http.Error(w, "Erro ao Deletar", http.StatusInternalServerError)
+			return
+		}
+		helper.JsonResponse(w, http.StatusOK, helper.ResponseMap{"message": "Removido com sucesso"})
 	default:
 		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
 	}
